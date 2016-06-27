@@ -1,21 +1,23 @@
 <?php
 namespace Dealer4dealer\PaymentCostExample\Plugin;
 
+use Closure;
 use Dealer4dealer\Xcore\Model\PaymentCost;
-use Psr\Log\LoggerInterface;
+use Magento\Framework\ObjectManagerInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
 
 class OrderRepositoryInterfacePlugin
 {
-    protected $logger;
+    protected $objectManager;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(ObjectManagerInterface $objectManager)
     {
-        $this->logger = $logger;
+        $this->objectManager = $objectManager;
     }
 
     public function aroundGet(
-        \Magento\Sales\Api\OrderRepositoryInterface $subject,
-        \Closure $proceed,
+        OrderRepositoryInterface $subject,
+        Closure $proceed,
         $orderId
     )
     {
@@ -26,12 +28,15 @@ class OrderRepositoryInterfacePlugin
 
             $extensionAttributes = $resultOrder->getPayment()->getExtensionAttributes();
 
+            /** @var PaymentCost $paymentCost */
+            $paymentCost = $this->objectManager->create('Dealer4dealer\Xcore\Model\PaymentCost');
+
             /**
              * We use hard coded values in this example. This would be
              * the place to add the payment cost of a PSP. For example
              * from the database.
              */
-            $paymentCost = new PaymentCost([
+            $paymentCost->setData([
                 'title'         => 'xCore PSPs',
                 'base_amount'   => 0.25,
                 'amount'        => 0.25,
