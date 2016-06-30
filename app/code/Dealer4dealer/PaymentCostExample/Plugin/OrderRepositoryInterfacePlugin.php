@@ -43,7 +43,7 @@ class OrderRepositoryInterfacePlugin
                 'tax_percent'   => 0,
             ]);
 
-            $extensionAttributes->setXcorePaymentCosts($paymentCost);
+            $extensionAttributes->setXcorePaymentCosts([$paymentCost]);
         }
 
         return $resultOrder;
